@@ -1,0 +1,16 @@
+[gd_scene load_steps=7 format=3 uid="uid://gqfktt83k5go"]
+
+[ext_resource type="Script" path="res://skills/skill_manager.gd" id="1_yvj5p"]
+[ext_resource type="PackedScene" uid="uid://cdyoqnbdamo6l" path="res://skills/heal_skill.tscn" id="2_yvj5p"]
+[ext_resource type="PackedScene" uid="uid://b5a5vrinr07g" path="res://skills/free_prisoner_skill.tscn" id="3_yvj5p"]
+[ext_resource type="PackedScene" uid="uid://bb5a5vrinr07g" path="res://skills/damage_buff_skill.tscn" id="4_yvj5p"]
+[ext_resource type="PackedScene" uid="uid://cb5a5vrinr07g" path="res://skills/convert_enemy_skill.tscn" id="5_yvj5p"]
+[ext_resource type="PackedScene" uid="uid://db5a5vrinr07g" path="res://skills/ally_buff_skill.tscn" id="6_yvj5p"]
+
+[node name="SkillManager" type="Node"]
+script = ExtResource("1_yvj5p")
+skill_1 = ExtResource("2_yvj5p")
+skill_2 = ExtResource("3_yvj5p")
+skill_3 = ExtResource("4_yvj5p")
+skill_4 = ExtResource("5_yvj5p")
+skill_5 = ExtResource("6_yvj5p")

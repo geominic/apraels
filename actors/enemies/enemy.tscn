@@ -1,0 +1,46 @@
+[gd_scene load_steps=8 format=3 uid="uid://cigp6cjmctok2"]
+
+[ext_resource type="Script" path="res://actors/enemies/enemy.gd" id="1_0yvnl"]
+[ext_resource type="Texture2D" uid="uid://bqkwcvx2so3f4" path="res://icon.svg" id="1_hfle8"]
+[ext_resource type="PackedScene" uid="uid://cdqi1i6hckxsm" path="res://weapons/weapon.tscn" id="3_ixnqm"]
+[ext_resource type="PackedScene" uid="uid://cduvft2wt6cvy" path="res://weapons/melee_weapon.tscn" id="4_yvnxl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c2q08"]
+size = Vector2(16, 16)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ixnqm"]
+radius = 128.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_yvnxl"]
+radius = 48.0
+
+[node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
+modulate = Color(1, 0.4, 0.4, 1)
+script = ExtResource("1_0yvnl")
+max_speed = 100.0
+attack_cooldown = 1.5
+attack_range = 50.0
+projectile_scene = ExtResource("3_ixnqm")
+melee_scene = ExtResource("4_yvnxl")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(9.53674e-07, 9.53674e-07)
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("1_hfle8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_c2q08")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_ixnqm")
+debug_color = Color(0.701961, 0.45098, 0.45098, 0.0784314)
+
+[node name="RangedPreferredDistance" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RangedPreferredDistance"]
+shape = SubResource("CircleShape2D_yvnxl")
+debug_color = Color(0.2, 0.8, 1, 0.0784314)
+
+[node name="MeleeWeaponHolder" type="Node2D" parent="."]

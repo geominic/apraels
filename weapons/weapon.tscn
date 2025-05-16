@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://cdqi1i6hckxsm"]
+
+[ext_resource type="Script" path="res://weapons/weapon.gd" id="1_ujvbl"]
+
+[node name="weapon" type="Area2D"]
+scale = Vector2(0.374341, 0.374341)
+script = ExtResource("1_ujvbl")
+fire_rate = 0.1
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.401154, 0.401154)
+
+[node name="Polygon2D" type="Polygon2D" parent="Sprite2D"]
+position = Vector2(8, 4)
+color = Color(0.585944, 0.585856, 0.0800675, 1)
+polygon = PackedVector2Array(-8, -16, 0, -16, 9, -14, 14, -8, 14, 0, 9, 6, 0, 8, -8, 8, -27, 6, -32, 8, -31, -4, -32, -16, -27, -14)
+
+[node name="Polygon2D2" type="Polygon2D" parent="Sprite2D"]
+position = Vector2(8, 4)
+color = Color(0.230527, 0.230561, 0.0160613, 1)
+polygon = PackedVector2Array(-27, -14, -27, 6, -18, 7, -18, -15)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+visible = false
+polygon = PackedVector2Array(0, -12, 8, -12, 17, -10, 22, -4, 22, 4, 17, 10, 8, 12, 0, 12, -19, 10, -24, 12, -23, 0, -24, -12, -19, -10)
+
+[node name="Timer" type="Timer" parent="."]

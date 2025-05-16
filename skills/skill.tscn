@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://b4e3kxu1g8qcv"]
+
+[ext_resource type="Script" path="res://skills/skill.gd" id="1_yvj5p"]
+[ext_resource type="Texture2D" uid="uid://bqkwcvx2so3f4" path="res://icon.svg" id="2_pmnju"]
+
+[node name="Skill" type="Node2D"]
+script = ExtResource("1_yvj5p")
+icon = ExtResource("2_pmnju")

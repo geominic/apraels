@@ -1,0 +1,95 @@
+[gd_scene load_steps=3 format=3 uid="uid://cduvft2wt6cvy"]
+
+[ext_resource type="Script" path="res://weapons/melee_weapon.gd" id="1_2i1lk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_melee"]
+size = Vector2(416, 72)
+
+[node name="MeleeWeapon" type="Area2D"]
+scale = Vector2(0.543634, 0.543634)
+collision_layer = 0
+collision_mask = 2
+monitoring = false
+monitorable = false
+script = ExtResource("1_2i1lk")
+attack_duration = 0.25
+cooldown = 0.1
+combo_swing_angle_2 = 105.0
+combo_swing_angle_3 = 135.0
+combo_attack_duration_3 = 0.75
+
+[node name="MeleeSprite" type="Sprite2D" parent="."]
+
+[node name="MeleeShape" type="CollisionShape2D" parent="."]
+position = Vector2(144, 4)
+shape = SubResource("RectangleShape2D_melee")
+
+[node name="MeleeHitbox" type="ColorRect" parent="."]
+offset_left = -64.0
+offset_top = -32.0
+offset_right = 352.0
+offset_bottom = 40.0
+color = Color(0.8, 0.2, 0.2, 0.6)
+
+[node name="CanvasGroup" type="CanvasGroup" parent="."]
+position = Vector2(-72, 0)
+scale = Vector2(1.68298, 1.68298)
+
+[node name="Polygon2D2" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-64, 2.90909)
+scale = Vector2(6.4, 5.81818)
+polygon = PackedVector2Array(13, -1, 13, -1, 19, -1, 20, 0, 19, -3, 20, -1, 19, -4, 20, -3, 20, -3, 24, -1, 20, -2, 21, -1, 21.6586, -11.4924, 22, -1, 23, -1, 22, 0, 22, 0, 22, 0, 24, -1, 25, -1, 29, 0, 26, -1, 50, 0, 48, 1, 46, 1, 48, 0, 45.1982, 1, 44, 1, 46, 0, 43.1094, 1, 42, 1, 44, 0, 41.0336, 1, 40, 1, 42, 0, 39, 1, 33, 1, 26, 1, 29, 0, 25, 1, 24, 1, 22, 0, 23, 1, 22, 1, 22, 1, 21.6586, 10.4924, 21, 1, 20.4422, 1.83663, 24, 1, 20, 3, 20, 3, 19, 4, 20, 1, 19, 3, 20, 0, 19, 1, 15, 1, 18.5924, 0.592396, 18, 0, 18, 0, 18, 0, 15, 0, 14, 0, 13, 1, 12, 1, 11, 1, 13, 0, 10, 0, 12, 0, 12, 0, 10, 0, 13, 0, 11, -1, 14, -1, 12, -2, 16, -1)
+
+[node name="Polygon2D" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-64, 2.90909)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.652227, 2.76752e-06, 4.33177e-07, 1)
+polygon = PackedVector2Array(29, 0, 26, -1, 50, 0, 49.6875, 0.171875, 32.0313, 0, 25.9375, 1.03125, 29, 0)
+
+[node name="Polygon2D10" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-64, 2.90909)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.258824, 0, 0, 1)
+polygon = PackedVector2Array(20.625, 0, 19.0625, -3.95313, 19.8438, -2.75, 21.4063, -0.171875, 22.3438, -0.6875, 21.8408, 0.00403547, 22.3438, 0.6875, 21.4063, 0.171875, 19.8438, 2.75, 19.0625, 3.95313)
+
+[node name="Polygon2D3" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-119, 21.9091)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.65098, 0, 0, 1)
+polygon = PackedVector2Array(31.4062, -3.26563, 32.9688, -3.78125, 33.4375, -3.78125, 36.5625, -3.26563, 33.4375, -2.75, 32.9688, -2.75)
+
+[node name="Polygon2D9" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-119, 21.9091)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.262089, 1.53417e-07, 3.60981e-08, 1)
+polygon = PackedVector2Array(31.7187, -3.26563, 32.9688, -3.60938, 33.4375, -3.60938, 34.8438, -3.26563, 33.4375, -2.92188, 32.9688, -2.92188)
+
+[node name="Polygon2D5" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-173, 19.9091)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.258824, 0, 0, 1)
+polygon = PackedVector2Array(30.3125, -3.09375, 29.2188, -3.60938, 35.3125, -3.26563, 35.4688, -3.09375)
+
+[node name="Polygon2D6" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-174, 22.9091)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.65098, 0, 0, 1)
+polygon = PackedVector2Array(30.625, -3.4375, 29.8438, -2.75, 28.75, -2.57813, 30, -2.57813, 30.9375, -3.4375)
+
+[node name="Polygon2D7" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-174, 22.9091)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.65098, 0, 0, 1)
+polygon = PackedVector2Array(30.1563, -5.15625, 31.0938, -4.64063, 31.5625, -4.29688, 29.375, -4.29688, 32.0313, -4.125, 32.5, -4.125, 31.7188, -4.46875)
+
+[node name="Polygon2D8" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-162, 29.9091)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.65098, 0, 0, 1)
+polygon = PackedVector2Array(34.8438, -4.29688, 35.1563, -4.64063, 34.0625, -3.95313, 32.5, -3.78125, 34.2188, -3.78125)
+
+[node name="Polygon2D4" type="Polygon2D" parent="CanvasGroup"]
+position = Vector2(-158, 21.9091)
+scale = Vector2(6.4, 5.81818)
+color = Color(0.65098, 0, 0, 1)
+polygon = PackedVector2Array(35.625, -3.60938, 34.6875, -3.95313, 35, -3.95313, 34.5313, -6.01563, 35.4652, -3.95313, 35.9375, -3.95313, 36.5625, -6.1875, 36.25, -3.95313, 36.875, -3.95313, 36.0938, -3.60938, 35.9375, -3.4375, 36.7188, -3.26563, 35.9375, -3.09375, 36.0938, -2.92188, 36.875, -2.57813, 36.25, -2.57813, 36.5625, -0.34375, 35.9375, -2.57813, 35.4688, -2.57813, 34.5313, -0.34375, 35, -2.57813, 34.6875, -2.57813, 35.625, -2.92188, 34.8438, -2.75, 35.625, -3.09375, 35.625, -3.09375, 34.6875, -3.26563, 35.625, -3.4375, 34.8438, -3.78125)

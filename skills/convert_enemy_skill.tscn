@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://cb5a5vrinr07g"]
+
+[ext_resource type="Script" path="res://skills/convert_enemy_skill.gd" id="1_yvj5p"]
+[ext_resource type="Texture2D" uid="uid://bqkwcvx2so3f4" path="res://icon.svg" id="2_60ujq"]
+[ext_resource type="PackedScene" uid="uid://c8j5qxoq7yvx7" path="res://skills/skill_effect.tscn" id="2_yvj5p"]
+
+[node name="ConvertEnemySkill" type="Node2D"]
+script = ExtResource("1_yvj5p")
+conversion_chance = 1.0
+max_health_percent = 50.0
+icon = ExtResource("2_60ujq")
+cooldown = 30.0
+skill_key = "skill_4"
+skill_color = Color(0.8, 0.2, 0.8, 1)
+skill_effect_scene = ExtResource("2_yvj5p")

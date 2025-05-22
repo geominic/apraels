@@ -1,6 +1,6 @@
 extends Skill
 
-@export var heal_amount : int = 30
+@export var heal_amount : int = 75
 @export var heal_radius : float = 50.0  # For area healing
 @export var heal_allies : bool = false  # Whether to heal allies too
 
@@ -35,7 +35,7 @@ func _execute_skill_effect(_target_position: Vector2) -> void:
 
 func _apply_level_bonuses() -> void:
 	# Increase healing amount with skill level
-	heal_amount = 30 + (skill_level - 1) * 10
+	heal_amount = heal_amount + (skill_level - 1) * 10
 
 	# At level 3, enable healing allies
 	if skill_level >= 3:

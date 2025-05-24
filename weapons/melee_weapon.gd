@@ -200,8 +200,8 @@ func check_hits() -> void:
 		# Player attacking enemies
 		targets = get_tree().get_nodes_in_group("enemy")
 	elif source and source.is_in_group("enemy"):
-		# Enemy attacking player
-		targets = get_tree().get_nodes_in_group("player")
+		# Enemy attacking players and allies
+		targets = get_tree().get_nodes_in_group("player") + get_tree().get_nodes_in_group("ally")
 	elif source and source.is_in_group("ally"):
 		# Ally attacking enemies
 		targets = get_tree().get_nodes_in_group("enemy")
@@ -280,6 +280,10 @@ func _on_body_entered(body: Node) -> void:
 
 	# Handle collision with enemies (when ally attacks)
 	elif source and source.is_in_group("ally") and body.is_in_group("enemy"):
+		apply_damage_to_target(body)
+		
+	# Handle collision with ally (when enemy attacks)
+	elif source and source.is_in_group("enemy") and body.is_in_group("ally"):
 		apply_damage_to_target(body)
 
 # Apply damage to the target

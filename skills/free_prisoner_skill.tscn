@@ -6,6 +6,9 @@
 
 [node name="FreePrisonerSkill" type="Node2D"]
 script = ExtResource("1_yvj5p")
+ally_duration = 60.0
+max_prisoners = 2
+prisoner_health = 20
 icon = ExtResource("2_y3rmj")
 skill_key = "skill_2"
 skill_color = Color(0, 0.7, 1, 1)

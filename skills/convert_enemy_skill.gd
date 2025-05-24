@@ -93,16 +93,16 @@ func can_activate(user: Node) -> bool:
 
 func _apply_level_bonuses() -> void:
 	# Increase conversion chance and duration with skill level
-	conversion_chance = 0.7 + (skill_level - 1) * 0.05
-	conversion_duration = 20.0 + (skill_level - 1) * 5.0
+	conversion_chance = conversion_chance + (skill_level - 1) * 0.05
+	conversion_duration = conversion_duration + (skill_level - 1) * 5.0
 
 	# At level 3, allow converting stronger enemies
 	if skill_level >= 3:
-		max_health_percent = 0.4
+		max_health_percent += 0.4
 
 	# At level 5, even higher chance and can convert stronger enemies
 	if skill_level >= 5:
 		conversion_chance = min(conversion_chance + 0.1, 0.95)  # Cap at 95%
-		max_health_percent = 0.5
+		max_health_percent += 0.5
 
 	description = "%.0f%% chance to convert an enemy below %.0f%% health to fight for you for %.0f seconds." % [conversion_chance * 100, max_health_percent * 100, conversion_duration]

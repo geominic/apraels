@@ -7,7 +7,7 @@
 [node name="ConvertEnemySkill" type="Node2D"]
 script = ExtResource("1_yvj5p")
 conversion_chance = 1.0
-max_health_percent = 50.0
+max_health_percent = 100.0
 icon = ExtResource("2_60ujq")
 cooldown = 30.0
 skill_key = "skill_4"

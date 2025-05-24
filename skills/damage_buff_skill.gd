@@ -36,8 +36,8 @@ func _execute_skill_effect(_target_position: Vector2) -> void:
 
 func _apply_level_bonuses() -> void:
 	# Increase damage multiplier and duration with skill level
-	damage_multiplier = 1.5 + (skill_level - 1) * 0.1
-	buff_duration = 15.0 + (skill_level - 1) * 5.0
+	damage_multiplier = damage_multiplier + (skill_level - 1) * 0.1
+	buff_duration = buff_duration + (skill_level - 1) * 5.0
 
 	# At level 3, enable buffing allies
 	if skill_level >= 3:

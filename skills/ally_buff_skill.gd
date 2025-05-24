@@ -55,14 +55,14 @@ func can_activate(user: Node) -> bool:
 
 func _apply_level_bonuses() -> void:
 	# Increase buff strength and duration with skill level
-	damage_buff = 1.3 + (skill_level - 1) * 0.1
-	speed_buff = 1.2 + (skill_level - 1) * 0.05
-	defense_buff = 0.8 - (skill_level - 1) * 0.05
-	buff_duration = 25.0 + (skill_level - 1) * 5.0
+	damage_buff = damage_buff + (skill_level - 1) * 0.1
+	speed_buff = speed_buff + (skill_level - 1) * 0.05
+	defense_buff = defense_buff - (skill_level - 1) * 0.05
+	buff_duration = buff_duration + (skill_level - 1) * 5.0
 
 	# At level 3, increase buff radius
 	if skill_level >= 3:
-		buff_radius = 250.0
+		buff_radius += 150.0
 
 	# At level 5, further improve buffs
 	if skill_level >= 5:

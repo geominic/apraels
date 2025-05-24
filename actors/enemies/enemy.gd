@@ -11,6 +11,11 @@ class_name Enemy
 @export var acceleration: float = 800.0
 @export var deceleration: float = 1000.0
 @export var detection_radius: float = 300.0
+@export var combat_move_timer_min: float = 0.7
+@export var combat_move_timer_max: float = 1.5
+@export var combat_preferred_distance: float = 150.0 # for ranged (default to preferred_distance)
+@export var combat_distance_threshold: float = 20.0 # for ranged (default to distance_threshold)
+@export var combat_melee_range: float = 30.0 # for melee (default to attack_range)
 
 # Health parameters
 @export_group("Health Parameters")
@@ -49,6 +54,21 @@ var can_attack: bool = true
 var attack_cooldown_timer: float = 0.0
 var melee_weapon: Node = null
 var is_attacking: bool = false
+
+# Buff variables
+var damage_buff_active: bool = false
+var damage_buff_multiplier: float = 1.0
+var damage_buff_timer: float = 0.0
+var speed_buff_active: bool = false
+var speed_buff_multiplier: float = 1.0
+var speed_buff_timer: float = 0.0
+var defense_buff_active: bool = false
+var defense_buff_multiplier: float = 1.0
+var defense_buff_timer: float = 0.0
+
+# Combat movement variables
+var combat_move_timer: float = 0.0
+var combat_move_direction: int = 1 # 1 for right, -1 for left
 
 func _ready() -> void:
 	# Add to enemy group for easier management
@@ -98,6 +118,23 @@ func _physics_process(delta: float) -> void:
 	# Update player detection
 	update_player_detection()
 
+	# Update buff timers
+	if damage_buff_active:
+		damage_buff_timer -= delta
+		if damage_buff_timer <= 0:
+			damage_buff_active = false
+			damage_buff_multiplier = 1.0
+	if speed_buff_active:
+		speed_buff_timer -= delta
+		if speed_buff_timer <= 0:
+			speed_buff_active = false
+			speed_buff_multiplier = 1.0
+	if defense_buff_active:
+		defense_buff_timer -= delta
+		if defense_buff_timer <= 0:
+			defense_buff_active = false
+			defense_buff_multiplier = 1.0
+
 	# Calculate movement direction based on status
 	if is_converted:
 		calculate_ally_direction()
@@ -118,12 +155,7 @@ func _physics_process(delta: float) -> void:
 		if is_converted:
 			# Allies always try to attack enemies
 			try_attack()
-
-			# Debug output for ranged allies
-			if is_ranged:
-				print("Ranged ally can attack: " + str(can_attack) +
-					  ", Is attacking: " + str(is_attacking) +
-					  ", Has projectile: " + str(projectile_scene != null))
+			
 		elif can_see_player:
 			# Enemies attack player if they can see them
 			try_attack()
@@ -137,37 +169,51 @@ func find_player() -> void:
 
 # Update player detection based on distance
 func update_player_detection() -> void:
-	if player_ref == null:
-		find_player()
+	if is_converted:
+		# Converted enemies follow their own logic
 		return
-
-	# Check if player is within detection radius
-	distance_to_player = global_position.distance_to(player_ref.global_position)
-	can_see_player = distance_to_player <= detection_radius
-
-	# For ranged enemies, check if at preferred distance
-	if is_ranged:
-		var was_at_preferred_distance = is_at_preferred_distance
-		is_at_preferred_distance = abs(distance_to_player - preferred_distance) <= distance_threshold
-
-		# Visual feedback when at preferred distance
-		if is_at_preferred_distance != was_at_preferred_distance:
-			update_ranged_status_visual()
-
-	if can_see_player:
-		target_position = player_ref.global_position
+	# Find closest target (player or ally)
+	var target = find_closest_target()
+	if target:
+		distance_to_player = global_position.distance_to(target.global_position)
+		can_see_player = distance_to_player <= detection_radius
+		target_position = target.global_position
+		player_ref = target
+		# Always update is_at_preferred_distance for current target
+		if is_ranged:
+			var was_at_preferred_distance = is_at_preferred_distance
+			is_at_preferred_distance = abs(distance_to_player - preferred_distance) <= distance_threshold
+			if is_at_preferred_distance != was_at_preferred_distance:
+				update_ranged_status_visual()
+	else:
+		can_see_player = false
 
 # Calculate movement direction
 func calculate_direction() -> void:
 	if can_see_player and player_ref != null:
 		if is_ranged:
-			# Handle ranged enemy movement
-			calculate_ranged_direction()
+			if is_at_preferred_distance:
+				combat_move_timer -= get_physics_process_delta_time()
+				if combat_move_timer <= 0:
+					combat_move_direction = (randi() % 2) * 2 - 1 # -1 or 1
+					combat_move_timer = randf_range(combat_move_timer_min, combat_move_timer_max)
+				var to_target = global_position.direction_to(target_position)
+				var strafe = Vector2(-to_target.y, to_target.x) * combat_move_direction
+				direction = strafe.normalized()
+			else:
+				calculate_ranged_direction()
 		else:
-			# Melee enemy - move directly towards player
-			direction = global_position.direction_to(target_position)
+			if distance_to_player <= combat_melee_range:
+				combat_move_timer -= get_physics_process_delta_time()
+				if combat_move_timer <= 0:
+					combat_move_direction = (randi() % 2) * 2 - 1 # -1 or 1
+					combat_move_timer = randf_range(combat_move_timer_min, combat_move_timer_max)
+				var to_target = global_position.direction_to(target_position)
+				var strafe = Vector2(-to_target.y, to_target.x) * combat_move_direction
+				direction = strafe.normalized()
+			else:
+				direction = global_position.direction_to(target_position)
 	else:
-		# No player detected, stop moving
 		direction = Vector2.ZERO
 
 # Calculate direction for ranged enemies
@@ -205,34 +251,32 @@ func calculate_ally_direction() -> void:
 	# If found a nearby enemy
 	if closest_enemy != null:
 		if is_ranged:
-			# Update preferred distance status for ranged allies
-			var was_at_preferred_distance = is_at_preferred_distance
-			is_at_preferred_distance = abs(closest_distance - preferred_distance) <= distance_threshold
-
-			# Debug output
-			print("Ranged ally distance to enemy: " + str(closest_distance) +
-				  ", At preferred distance: " + str(is_at_preferred_distance))
-
-			# Ranged ally behavior
-			if closest_distance < preferred_distance - distance_threshold:
-				# Too close to enemy, move away
-				direction = global_position.direction_to(closest_enemy.global_position) * -1
-			elif closest_distance > preferred_distance + distance_threshold:
-				# Too far from enemy, move closer
-				direction = global_position.direction_to(closest_enemy.global_position)
+			if is_at_preferred_distance:
+				combat_move_timer -= get_physics_process_delta_time()
+				if combat_move_timer <= 0:
+					combat_move_direction = (randi() % 2) * 2 - 1 # -1 or 1
+					combat_move_timer = randf_range(combat_move_timer_min, combat_move_timer_max)
+				var to_enemy = global_position.direction_to(closest_enemy.global_position)
+				var strafe = Vector2(-to_enemy.y, to_enemy.x) * combat_move_direction
+				direction = strafe.normalized()
 			else:
-				# At preferred distance, stop moving
-				direction = Vector2.ZERO
-
-				# Face the enemy
-				update_sprite_direction_to_face_enemy(closest_enemy)
+				if closest_distance < combat_preferred_distance - combat_distance_threshold:
+					direction = global_position.direction_to(closest_enemy.global_position) * -1
+				elif closest_distance > combat_preferred_distance + combat_distance_threshold:
+					direction = global_position.direction_to(closest_enemy.global_position)
+				else:
+					direction = Vector2.ZERO
 		else:
-			# Melee ally behavior - move directly toward enemy
-			if closest_distance > attack_range:
-				direction = global_position.direction_to(closest_enemy.global_position)
+			if closest_distance <= combat_melee_range:
+				combat_move_timer -= get_physics_process_delta_time()
+				if combat_move_timer <= 0:
+					combat_move_direction = (randi() % 2) * 2 - 1 # -1 or 1
+					combat_move_timer = randf_range(combat_move_timer_min, combat_move_timer_max)
+				var to_enemy = global_position.direction_to(closest_enemy.global_position)
+				var strafe = Vector2(-to_enemy.y, to_enemy.x) * combat_move_direction
+				direction = strafe.normalized()
 			else:
-				# Close enough to attack, stop moving
-				direction = Vector2.ZERO
+				direction = global_position.direction_to(closest_enemy.global_position)
 	else:
 		# No enemies found, follow the player
 		if player_ref != null:
@@ -248,7 +292,7 @@ func calculate_ally_direction() -> void:
 func apply_movement(delta: float) -> void:
 	if direction != Vector2.ZERO:
 		# Accelerate towards target velocity
-		var target_velocity = direction * max_speed
+		var target_velocity = direction * max_speed * speed_buff_multiplier
 		velocity = velocity.move_toward(target_velocity, acceleration * delta)
 	else:
 		# Decelerate to stop
@@ -326,8 +370,9 @@ func take_damage(amount: int) -> void:
 	if is_dying:
 		return
 
-	# Apply damage
-	current_hp = max(0, current_hp - amount)
+	# Apply defense buff (damage reduction)
+	var final_amount = int(amount * defense_buff_multiplier)
+	current_hp = max(0, current_hp - final_amount)
 
 	# Flash red to indicate damage
 	modulate = Color(1.0, 0.0, 0.0, 1.0)
@@ -335,9 +380,6 @@ func take_damage(amount: int) -> void:
 	# Create a timer to reset the color
 	var timer = get_tree().create_timer(0.2)
 	timer.connect("timeout", _on_damage_flash_timeout)
-
-	# Print damage for testing
-	print("Enemy took " + str(amount) + " damage! HP: " + str(current_hp) + "/" + str(max_hp))
 
 	# Check for death
 	if current_hp <= 0:
@@ -375,8 +417,6 @@ func convert_to_ally(new_master: Node2D, duration: float) -> void:
 	remove_from_group("enemy")
 	add_to_group("ally")
 
-	print("Enemy converted to ally for " + str(duration) + " seconds!")
-
 # Revert back to enemy when ally timer expires
 func revert_to_enemy() -> void:
 	is_converted = false
@@ -391,8 +431,6 @@ func revert_to_enemy() -> void:
 	remove_from_group("ally")
 	add_to_group("enemy")
 
-	print("Ally reverted to enemy!")
-
 # Handle enemy death
 func die() -> void:
 	# Set dying state
@@ -406,8 +444,6 @@ func die() -> void:
 
 	# Optional: Play death animation
 	# $AnimationPlayer.play("death")
-
-	print("Enemy died!")
 
 	# Check for item drop
 	if randf() <= drop_chance:
@@ -457,9 +493,14 @@ func try_attack() -> void:
 		# Ally behavior - attack nearby enemies
 		try_attack_enemies()
 	else:
-		# Enemy behavior - attack player
+		# Enemy behavior - attack player or ally
+		if player_ref == null:
+			print("[Enemy] No valid target to attack!")
+			return
 		if is_ranged:
-			# Ranged attack - shoot projectile
+			# Always update is_at_preferred_distance for current target
+			var dist = global_position.distance_to(player_ref.global_position)
+			is_at_preferred_distance = abs(dist - preferred_distance) <= distance_threshold
 			if is_at_preferred_distance and projectile_scene:
 				shoot_projectile()
 		else:
@@ -473,9 +514,6 @@ func try_attack_enemies() -> void:
 	var enemies = get_tree().get_nodes_in_group("enemy")
 	var closest_enemy = null
 	var closest_distance = attack_range * 3  # Larger search range for ranged allies
-
-	# Debug output
-	print("Ally trying to attack enemies. Is ranged: " + str(is_ranged) + ", Enemies count: " + str(enemies.size()))
 
 	for enemy in enemies:
 		# Skip self
@@ -492,33 +530,26 @@ func try_attack_enemies() -> void:
 		# Store as target
 		var target_enemy = closest_enemy
 
-		# Debug output
-		print("Found target enemy at distance: " + str(closest_distance) +
-			  ", Preferred distance: " + str(preferred_distance) +
-			  ", Threshold: " + str(distance_threshold))
-
 		if is_ranged:
 			# Ranged attack - always shoot if within reasonable range
 			# Relaxed distance check for ranged allies
 			if closest_distance <= detection_radius:
-				print("Ranged ally attempting to shoot at enemy")
 				shoot_projectile_at_enemy(target_enemy)
 			else:
-				print("Enemy too far for ranged ally to shoot")
+				pass
 		else:
 			# Melee attack - if close enough
 			if closest_distance <= attack_range and melee_weapon:
 				start_melee_attack_at_enemy(target_enemy)
 			else:
-				print("Enemy too far for melee ally to attack: " + str(closest_distance) + " > " + str(attack_range))
+				pass
 	else:
-		print("No enemy targets found for ally")
+		pass
 
 # Shoot a projectile at the player
 func shoot_projectile() -> void:
 	# Skip if no projectile scene
 	if not projectile_scene:
-		print("ERROR: No projectile scene assigned to ranged enemy!")
 		return
 
 	# Set cooldown
@@ -538,8 +569,6 @@ func shoot_projectile() -> void:
 
 	# Add projectile to scene
 	get_parent().add_child(projectile)
-
-	print("Enemy fired projectile!")
 
 	# Reset attacking flag immediately for ranged attacks
 	is_attacking = false
@@ -561,18 +590,15 @@ func start_melee_attack() -> void:
 	# Start the attack
 	melee_weapon.start_attack()
 
-	print("Enemy performed melee attack!")
 
 # Called when melee attack is finished
 func _on_melee_attack_finished() -> void:
 	is_attacking = false
-	print("Enemy melee attack finished")
 
 # Shoot a projectile at a specific enemy
 func shoot_projectile_at_enemy(target_enemy: Node2D) -> void:
 	# Skip if no projectile scene
 	if not projectile_scene:
-		print("ERROR: No projectile scene assigned to ranged ally!")
 		return
 
 	# Set cooldown
@@ -592,8 +618,6 @@ func shoot_projectile_at_enemy(target_enemy: Node2D) -> void:
 
 	# Add projectile to scene
 	get_parent().add_child(projectile)
-
-	print("Ally fired projectile at enemy!")
 
 	# Reset attacking flag immediately for ranged attacks
 	is_attacking = false
@@ -615,4 +639,41 @@ func start_melee_attack_at_enemy(target_enemy: Node2D) -> void:
 	# Start the attack
 	melee_weapon.start_attack()
 
-	print("Ally performed melee attack against enemy!")
+func apply_damage_buff(multiplier: float, duration: float) -> void:
+	damage_buff_active = true
+	damage_buff_multiplier = multiplier
+	damage_buff_timer = duration
+
+func apply_speed_buff(multiplier: float, duration: float) -> void:
+	speed_buff_active = true
+	speed_buff_multiplier = multiplier
+	speed_buff_timer = duration
+
+func apply_defense_buff(multiplier: float, duration: float) -> void:
+	defense_buff_active = true
+	defense_buff_multiplier = multiplier
+	defense_buff_timer = duration
+
+func apply_buffs(dmg_mult: float, spd_mult: float, def_mult: float, duration: float) -> void:
+	apply_damage_buff(dmg_mult, duration)
+	apply_speed_buff(spd_mult, duration)
+	apply_defense_buff(def_mult, duration)
+
+func get_damage_multiplier() -> float:
+	return damage_buff_multiplier
+
+# Add a helper to find the closest target (player or ally)
+func find_closest_target() -> Node2D:
+	var candidates = []
+	candidates += get_tree().get_nodes_in_group("player")
+	candidates += get_tree().get_nodes_in_group("ally")
+	var closest = null
+	var closest_distance = INF
+	for node in candidates:
+		if node == self:
+			continue
+		var dist = global_position.distance_to(node.global_position)
+		if dist < closest_distance:
+			closest = node
+			closest_distance = dist
+	return closest

@@ -6,6 +6,7 @@
 scale = Vector2(0.374341, 0.374341)
 script = ExtResource("1_ujvbl")
 fire_rate = 0.1
+spread = 15.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.401154, 0.401154)

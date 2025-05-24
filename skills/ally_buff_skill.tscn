@@ -6,6 +6,9 @@
 
 [node name="AllyBuffSkill" type="Node2D"]
 script = ExtResource("1_yvj5p")
+damage_buff = 1.25
+defense_buff = 0.6
+buff_duration = 20.0
 icon = ExtResource("2_7unm7")
 skill_key = "skill_5"
 skill_color = Color(1, 0.8, 0, 1)

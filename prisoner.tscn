@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://drax8271nr3q7"]
+[gd_scene load_steps=6 format=3 uid="uid://drax8271nr3q7"]
 
 [ext_resource type="Script" path="res://prisoner.gd" id="1_57vq7"]
 [ext_resource type="Texture2D" uid="uid://bqkwcvx2so3f4" path="res://icon.svg" id="1_ipctl"]
@@ -7,7 +7,11 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_djw3g"]
 size = Vector2(16, 16)
 
+[sub_resource type="LabelSettings" id="LabelSettings_cy8t7"]
+font_size = 10
+
 [node name="Prisoner" type="CharacterBody2D"]
+slide_on_ceiling = false
 script = ExtResource("1_57vq7")
 weapon_scene = ExtResource("2_trs6x")
 is_ranged = true
@@ -22,27 +26,28 @@ shape = SubResource("RectangleShape2D_djw3g")
 [node name="ProjectileSpawn" type="Marker2D" parent="."]
 
 [node name="HealthBarBackground" type="ColorRect" parent="."]
-offset_left = -48.0
+offset_left = -16.0
 offset_top = -24.0
-offset_right = 144.0
+offset_right = 48.0
 offset_bottom = -4.0
 scale = Vector2(0.499651, 0.499651)
 color = Color(0.2, 0.2, 0.2, 0.8)
 
 [node name="HealthBar" type="ColorRect" parent="."]
-offset_left = -48.0
+offset_left = -16.0
 offset_top = -24.0
-offset_right = 144.0
+offset_right = 48.0
 offset_bottom = -4.0
 scale = Vector2(0.500427, 0.500427)
 color = Color(0.8, 0.2, 0.2, 0.8)
 
 [node name="HealthLabel" type="Label" parent="."]
-offset_left = -48.0
+offset_left = -16.0
 offset_top = -24.0
-offset_right = 144.0
+offset_right = 48.0
 offset_bottom = -1.0
 scale = Vector2(0.500444, 0.500444)
 text = "HP: 100/100"
+label_settings = SubResource("LabelSettings_cy8t7")
 horizontal_alignment = 1
 vertical_alignment = 1

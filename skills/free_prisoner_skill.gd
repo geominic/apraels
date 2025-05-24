@@ -72,7 +72,7 @@ func can_activate(user: Node) -> bool:
 
 func _apply_level_bonuses() -> void:
 	# Increase duration with skill level
-	ally_duration = 30.0 + (skill_level - 1) * 15.0
+	ally_duration = ally_duration + (skill_level - 1) * 15.0
 
 	# At level 3, allow freeing more prisoners at once
 	if skill_level >= 3:

@@ -4,6 +4,7 @@ extends Area2D
 @export var damage : int = 10
 @export var lifetime : float = 2.0
 @export var fire_rate : float = 0.2  # Time in seconds between shots
+@export var spread : float = 0.0  # Max spread angle in degrees (0 = no spread)
 
 var direction : Vector2 = Vector2.RIGHT
 var source : Node = null  # Who fired this projectile
@@ -24,6 +25,10 @@ func _physics_process(delta: float) -> void:
 
 func set_direction(new_direction: Vector2) -> void:
 	direction = new_direction.normalized()
+	# Apply spread if any
+	if spread > 0.0:
+		var angle_offset = deg_to_rad(randf_range(-spread/2.0, spread/2.0))
+		direction = direction.rotated(angle_offset)
 	# Rotate sprite to face direction
 	rotation = direction.angle()
 
@@ -40,10 +45,11 @@ func _on_body_entered(body: Node) -> void:
 	if source.is_in_group("ally") and body.is_in_group("ally"):
 		return
 
-	# Handle collision with enemies or player
+	# Handle collision with enemies or player or ally
 	if (source.is_in_group("player") and body.is_in_group("enemy")) or \
 	   (source.is_in_group("enemy") and body.is_in_group("player")) or \
-	   (source.is_in_group("ally") and body.is_in_group("enemy")):
+	   (source.is_in_group("ally") and body.is_in_group("enemy")) or \
+	   (source.is_in_group("enemy") and body.is_in_group("ally")):
 		# Apply damage
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
